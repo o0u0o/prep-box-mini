@@ -1,2 +1,32 @@
-<!--pages/about/about.wxml-->
-<text>pages/about/about.wxml</text>
+<view class="about-page">
+  <view class="about-title">关于面试准备盒</view>
+  <view class="about-meta">帮助求职者在面试前查看企业公开信息与可核验线索</view>
+
+  <view class="about-card">
+	<view class="about-card-title">我们提供什么</view>
+	<view class="about-p">面试准备盒整理企业基础信息、公开司法/行政记录、用户提交的求职线索等内容，帮助求职者在投递、面试、入职前做背景参考。</view>
+	<view class="about-p">平台尽量以公开来源、可核验材料和客观描述为基础，不鼓励情绪化评价、未经核实的指控或侵犯个人隐私的内容。</view>
+  </view>
+
+  <view class="about-card warn">
+	<view class="about-card-title">重要免责声明</view>
+	<view class="about-li">本服务展示的信息仅供求职前参考，不构成对任何企业、组织或个人的最终定性、信用评级、投资建议或法律意见。</view>
+	<view class="about-li">企业经营状态、司法/行政记录、履行或解除情况可能随时间变化，请以国家企业信用信息公示系统、信用中国、中国执行信息公开网、法院/人社部门公告等官方最新信息为准。</view>
+	<view class="about-li">用户提交内容不代表平台观点。平台会进行基础审核，但不保证用户提交内容在所有时点均完整、准确或持续有效。</view>
+  </view>
+
+  <view class="about-card">
+	<view class="about-card-title">数据与审核边界</view>
+	<view class="about-li">优先收录有官方公告、裁判文书、行政处罚、失信被执行、重大劳动保障违法案件或主流媒体报道支持的公开信息。</view>
+	<view class="about-li">涉及个人姓名、联系方式、身份证件、住址等信息时，仅允许展示已由官方公开渠道披露且与企业主体识别必要相关的最小信息。</view>
+	<view class="about-li">不得提交商业秘密、未公开案件材料、未生效或无法核验的指控、侮辱性表达、歧视性内容或与求职风险无关的信息。</view>
+  </view>
+
+  <view class="about-card">
+	<view class="about-card-title">更正、删除与申诉</view>
+	<view class="about-p">如果您是被提及企业/当事人，或发现内容存在错误、状态已更新、来源失效、权益受影响，可通过「申诉 / 反馈」提交说明和可核验材料。</view>
+	<view class="about-p">平台收到后将进行复核；对于无法核验、明显失实、侵权或已不适宜展示的内容，将视情况更正、隐藏或删除。</view>
+  </view>
+
+  <view class="about-footer">最近更新：2026-09-29</view>
+</view>

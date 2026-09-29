@@ -53,13 +53,13 @@
       <view class="hero-tag" data-kw="劳动争议" bindtap="onTagTap">劳动争议</view>
       <view class="hero-tag" data-kw="行政处罚" bindtap="onTagTap">行政处罚</view>
       <view class="hero-tag" data-kw="失信被执行" bindtap="onTagTap">失信被执行</view>
-      <view class="hero-tag" data-kw="疑似传销" bindtap="onTagTap">疑似传销</view>
+      <view class="hero-tag" data-kw="招聘风险线索" bindtap="onTagTap">招聘风险线索</view>
     </view>
   </view>
 
   <!-- 合规提示条 -->
   <view class="disclaimer">
-    面试准备盒 · PrepBox：平台内容仅作面试、求职参考，不构成对企业的最终定性。发现失实可 <text class="link" bindtap="goAppeal">申诉、反馈</text>。
+    面试准备盒 · PrepBox：平台内容仅作面试、求职参考，不构成对企业的最终定性；企业状态和争议记录请以官方最新公示为准。发现失实可 <text class="link" bindtap="goAppeal">申诉、反馈</text>。
   </view>
 
   <!-- 分区标题 -->

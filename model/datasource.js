@@ -15,12 +15,10 @@ import { Http } from '../utils/http';
 // ---- 本地数据（以 .js 模块形式导出，兼容小程序构建器） ----
 const localCompanies  = require('../data/companies.js');
 const localCategories = require('../data/categories.js');
-const localSalaries   = require('../data/salaries.js');
-const localReviews    = require('../data/reviews.js');
 
 // ---------------- 字段补全 ----------------
 // 旧数据只有 type/source/remark，新版页面需要 status/scaleTags/riskTags/法人/信用代码 等。
-// 这里在「读取」时统一补齐，避免一次性手工改 20 条数据；
+// 这里在「读取」时统一补齐展示结构，但不擅自推断真实工商状态/规模；
 // 后端就绪后该函数可整体删除——返回结构与服务端约定一致。
 function normalize(c) {
   if (!c) return c;
@@ -35,12 +33,12 @@ function normalize(c) {
   // 2) 统一社会信用代码（结构化字段 uscc，兼容旧字段 socialCreditCode）
   const socialCreditCode = c.uscc || c.socialCreditCode || '';
 
-  // 3) 经营状态：默认存续；remark 出现"注销"则注销
+  // 3) 经营状态：不擅自推断。仅在 remark 明确出现"注销"时展示注销，否则待核验。
   let status = c.status;
-  if (!status) status = /注销/.test(remark) ? '注销' : '存续';
+  if (!status) status = /注销/.test(remark) ? '注销' : '待核验';
 
-  // 4) 规模标签：默认小微（数据集均为小微/未公开公司）
-  const scaleTags = c.scaleTags && c.scaleTags.length ? c.scaleTags : ['小微企业'];
+  // 4) 规模标签：无公开依据时不展示默认规模。
+  const scaleTags = c.scaleTags && c.scaleTags.length ? c.scaleTags : [];
 
   // 5) 风险标签：用 type + source + update_time 兜底构造一条
   let riskTags = c.riskTags;
@@ -109,10 +107,12 @@ class DataSource {
       const cid = Number(id);
       const found = localCompanies.companys.find(c => c.id === cid);
       if (!found) return null;
-      // 详情页需要薪资 / 点评数据，注入本地模拟数据
+      // 详情页仅展示记录自身携带的薪资 / 点评数据。
+      // data/salaries.js 与 data/reviews.js 是开发联调用模拟数据，不自动注入真实企业，
+      // 避免用户误认为模拟内容是实际员工评价或真实薪酬披露。
       const detail = Object.assign({}, found, {
-        salaries: found.salaries || localSalaries.getByCompanyId(cid),
-        reviews:  found.reviews  || localReviews.getByCompanyId(cid)
+        salaries: found.salaries || [],
+        reviews:  found.reviews  || []
       });
       return normalize(detail);
     }

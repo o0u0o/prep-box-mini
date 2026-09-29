@@ -54,6 +54,16 @@
     gap: 12rpx;
     margin-top: var(--space-md);
 }
+.d-legal-tip {
+    margin-top: var(--space-md);
+    padding: 16rpx 20rpx;
+    background-color: #FFF8EC;
+    border: 1rpx solid #FFE1A8;
+    border-radius: 12rpx;
+    font-size: 24rpx;
+    line-height: 1.7;
+    color: #8A5A00;
+}
 
 /* ===== Panel 通用 ===== */
 .d-panel {
@@ -119,6 +129,15 @@
     margin-bottom: var(--space-sm);
     padding-left: 16rpx;
     border-left: 6rpx solid var(--color-primary);
+}
+.section-tip {
+    margin-bottom: var(--space-sm);
+    padding: 12rpx 16rpx;
+    background-color: var(--color-bg-soft);
+    border-radius: 10rpx;
+    font-size: 23rpx;
+    line-height: 1.7;
+    color: var(--color-text-3);
 }
 
 .d-empty {
