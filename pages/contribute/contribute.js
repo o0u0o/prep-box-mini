@@ -1,12 +1,17 @@
 import { Company } from '../../model/company';
-const categories = require('../../data/categories.js');
+const CATEGORIES = require('../../data/categories.js');
 
-const REQUIRED_FIELDS = ['name', 'type', 'province', 'source'];
+const REQUIRED_FIELD_MESSAGES = Object.freeze({
+  name: '请填写公司/机构名称',
+  type: '请选择类型',
+  province: '请选择省/市/区',
+  source: '请填写信源（裁判文书号 / 公告链接 / 媒体报道 URL）'
+});
 
 Page({
   data: {
     // 类型选项
-    typeOptions: categories,
+    typeOptions: CATEGORIES,
 
     // 表单字段
     form: {
@@ -38,44 +43,39 @@ Page({
     showPreview: false
   },
 
-  onLoad() {
-    // 尝试恢复草稿（可选，用户上次未提交内容）
-    // 这里仅做最小实现，不持久化
-  },
-
   // ============ 字段绑定 ============
 
-  bindName(e) {
-    this._setField('name', (e.detail.value || '').trim());
+  bindName(event) {
+    this._setField('name', (event.detail.value || '').trim());
   },
-  bindAddress(e) {
-    this._setField('address', e.detail.value || '');
+  bindAddress(event) {
+    this._setField('address', event.detail.value || '');
   },
-  bindSource(e) {
-    const v = e.detail.value || '';
-    this._setField('source', v.trim());
-    this.setData({ sourceLen: v.length });
+  bindSource(event) {
+    const value = event.detail.value || '';
+    this._setField('source', value.trim());
+    this.setData({ sourceLen: value.length });
   },
-  bindRemark(e) {
-    const v = e.detail.value || '';
-    this._setField('remark', v);
-    this.setData({ remarkLen: v.length });
+  bindRemark(event) {
+    const value = event.detail.value || '';
+    this._setField('remark', value);
+    this.setData({ remarkLen: value.length });
   },
 
   // 类型 radio
-  onTypeChange(e) {
+  onTypeChange(event) {
     // lin-ui radio-group 触发 linchange 时 detail 是 { key, ... }
-    const v = (e.detail && (e.detail.key || e.detail.currentKey)) || '';
-    this._setField('type', v);
+    const value = (event.detail && (event.detail.key || event.detail.currentKey)) || '';
+    this._setField('type', value);
   },
 
   // 省市区 picker
-  onRegionChange(e) {
-    const arr = e.detail.value || [];
-    const [province = '', city = '', district = ''] = arr;
+  onRegionChange(event) {
+    const region = event.detail.value || [];
+    const [province = '', city = '', district = ''] = region;
     this.setData({
-      region: arr,
-      regionText: arr.filter(Boolean).join(' / '),
+      region,
+      regionText: region.filter(Boolean).join(' / '),
       'form.province': province,
       'form.city': city,
       'form.district': district
@@ -89,9 +89,9 @@ Page({
   },
 
   // 内部：设置字段并清错
-  _setField(key, val) {
-    this.setData({ [`form.${key}`]: val });
-    if (this.data.errors[key] && val) {
+  _setField(key, value) {
+    this.setData({ [`form.${key}`]: value });
+    if (this.data.errors[key] && value) {
       const errors = { ...this.data.errors };
       delete errors[key];
       this.setData({ errors });
@@ -114,11 +114,12 @@ Page({
 
   _validate() {
     const errors = {};
-    const f = this.data.form;
-    if (!f.name) errors.name = '请填写公司/机构名称';
-    if (!f.type) errors.type = '请选择类型';
-    if (!f.province) errors.province = '请选择省/市/区';
-    if (!f.source) errors.source = '请填写信源（裁判文书号 / 公告链接 / 媒体报道 URL）';
+    const { form } = this.data;
+    Object.entries(REQUIRED_FIELD_MESSAGES).forEach(([field, message]) => {
+      if (!form[field]) {
+        errors[field] = message;
+      }
+    });
     this.setData({ errors });
     return Object.keys(errors).length === 0;
   },
@@ -149,12 +150,12 @@ Page({
   async confirmSubmit() {
     this.setData({ showPreview: false });
     const payload = { ...this.data.form };
-    const res = await Company.addCompanyInfo(payload);
-    if (res && res.code === 500) {
+    const response = await Company.addCompanyInfo(payload);
+    if (response && response.code === 500) {
       wx.lin.showToast({ title: '已有相同记录，无需重复提交', icon: 'error' });
       return;
     }
-    if (res && res.code === 0) {
+    if (response && response.code === 0) {
       wx.lin.showToast({ title: '提交成功，等待审核', icon: 'success' });
       setTimeout(() => {
         wx.navigateBack();

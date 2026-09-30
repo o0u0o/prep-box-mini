@@ -10,21 +10,29 @@ Page({
     }
   },
 
-  onTypePick(e) {
-    const idx = Number(e.detail.value);
+  onTypePick(event) {
+    const typeIndex = Number(event.detail.value);
     this.setData({
-      typeIndex: idx,
-      'form.type': this.data.typeOptions[idx] || ''
+      typeIndex,
+      'form.type': this.data.typeOptions[typeIndex] || ''
     });
   },
 
-  bindTarget(e)  { this.setData({ 'form.target':  e.detail.value }); },
-  bindContact(e) { this.setData({ 'form.contact': e.detail.value }); },
-  bindContent(e) { this.setData({ 'form.content': e.detail.value }); },
+  bindTarget(event) {
+    this.setData({ 'form.target': event.detail.value });
+  },
+
+  bindContact(event) {
+    this.setData({ 'form.contact': event.detail.value });
+  },
+
+  bindContent(event) {
+    this.setData({ 'form.content': event.detail.value });
+  },
 
   submit() {
-    const f = this.data.form;
-    if (!f.type || !f.target || !f.content) {
+    const { form } = this.data;
+    if (!form.type || !form.target || !form.content) {
       wx.lin.showToast({ title: '请完整填写必填项', icon: 'error' });
       return;
     }

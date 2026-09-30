@@ -23,9 +23,11 @@ const PRIVACY_METHODS = {
    * 仅基础库 >= 2.32.3 生效，否则静默放行
    */
   checkPrivacy() {
-    if (!wx.getPrivacySetting) return;
+    if (!wx.getPrivacySetting) {
+      return;
+    }
     wx.getPrivacySetting({
-      success: (res) => {
+      success: res => {
         if (res.needAuthorization) {
           this.setData({
             showPrivacy: true,
@@ -46,13 +48,15 @@ const PRIVACY_METHODS = {
   },
 
   _registerPrivacyListener() {
-    if (!wx.onNeedPrivacyAuthorization || this._privacyListenerRegistered) return;
+    if (!wx.onNeedPrivacyAuthorization || this._privacyListenerRegistered) {
+      return;
+    }
     this._privacyListenerRegistered = true;
-    wx.onNeedPrivacyAuthorization((resolve) => {
+    wx.onNeedPrivacyAuthorization(resolve => {
       this._privacyResolve = resolve;
       if (wx.getPrivacySetting) {
         wx.getPrivacySetting({
-          success: (res) => {
+          success: res => {
             this.setData({
               showPrivacy: true,
               privacyContractName: res.privacyContractName || '《隐私政策》'
@@ -102,9 +106,12 @@ const PRIVACY_DATA = {
  * 同名方法/字段优先使用页面自身定义，保留覆盖能力
  */
 function withPrivacy(pageOptions = {}) {
-  const merged = Object.assign({}, pageOptions);
-  merged.data = Object.assign({}, PRIVACY_DATA, pageOptions.data || {});
-  Object.keys(PRIVACY_METHODS).forEach((key) => {
+  const merged = { ...pageOptions };
+  merged.data = {
+    ...PRIVACY_DATA,
+    ...(pageOptions.data || {})
+  };
+  Object.keys(PRIVACY_METHODS).forEach(key => {
     if (!(key in merged)) {
       merged[key] = PRIVACY_METHODS[key];
     }

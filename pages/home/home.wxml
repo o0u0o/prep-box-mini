@@ -45,7 +45,7 @@
                   bg-color="#FFFFFF"
                   shape="circle"
                   show-cancel="{{false}}"
-                  bind:linconfirm="endsearchList">
+                  bind:linconfirm="onSearchConfirm">
     </l-search-bar>
 
     <!-- 热门分类标签 -->
@@ -160,4 +160,3 @@
     </view>
   </view>
 </view>
-

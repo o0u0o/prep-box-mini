@@ -1,20 +1,16 @@
-// pages/detail/detail.js
-import { Company } from "../../model/company";
-import { withPrivacy } from "../../utils/privacy";
+import { Company } from '../../model/company';
+import { withPrivacy } from '../../utils/privacy';
 
 Page(withPrivacy({
   data: {
     company: null,
-    activeTab: 0,    // 0=基本信息  1=薪资  2=点评
+    activeTab: 0, // 0=基本信息  1=薪资  2=点评
     activeKey: '0', // l-segment 需要字符串 key
     salary: { total: 0 },
     review: { total: 0 },
     // 隐私授权字段（showPrivacy / privacyContractName）由 withPrivacy 注入
     // 默认匿名头像（当找不到匹配时作为备用）
-    defaultAvatar: '/imgs/avatar/1.png',
-    // l-rate 的五角星图标（lin-ui 自带图标为爱心）
-    starActive: 'https://img.icons8.com/fluency/48/star.png',
-    starInactive: 'https://img.icons8.com/material-outlined/48/cccccc/star--v1.png'
+    defaultAvatar: '/imgs/avatar/1.png'
   },
 
   async onLoad(options) {
@@ -39,24 +35,29 @@ Page(withPrivacy({
   },
 
   // l-segment 切换
-  onTabChange(e) {
+  onTabChange(event) {
     // l-segment 的 linchange 事件 detail: { activeKey, currentIndex }
-    const d = e && e.detail || {};
-    const idx = d.currentIndex !== undefined ? d.currentIndex
-              : d.activeKey !== undefined    ? d.activeKey
-              : d.index;
-    const n = Number(idx);
-    const safeN = isNaN(n) ? 0 : n;
+    const detail = (event && event.detail) || {};
+    let index = detail.index;
+    if (detail.currentIndex !== undefined) {
+      index = detail.currentIndex;
+    } else if (detail.activeKey !== undefined) {
+      index = detail.activeKey;
+    }
+    const numericIndex = Number(index);
+    const activeTab = Number.isNaN(numericIndex) ? 0 : numericIndex;
     this.setData({
-      activeTab: safeN,
-      activeKey: String(safeN)
+      activeTab,
+      activeKey: String(activeTab)
     });
   },
 
   // 复制信用代码（需隐私授权后才可调用剪贴板 API）
   copyCode() {
     const code = this.data.company && this.data.company.socialCreditCode;
-    if (!code) return;
+    if (!code) {
+      return;
+    }
     const doCopy = () => {
       wx.setClipboardData({
         data: code,
@@ -86,17 +87,23 @@ Page(withPrivacy({
 
   // 爆料薪资
   goContributeSalary() {
-    wx.navigateTo({ url: '/pages/contribute/contribute?type=salary&companyId=' + (this.data.company && this.data.company.id || '') });
+    const companyId = (this.data.company && this.data.company.id) || '';
+    wx.navigateTo({
+      url: `/pages/contribute/contribute?type=salary&companyId=${companyId}`
+    });
   },
 
   // 写点评
   goContributeReview() {
-    wx.navigateTo({ url: '/pages/contribute/contribute?type=review&companyId=' + (this.data.company && this.data.company.id || '') });
+    const companyId = (this.data.company && this.data.company.id) || '';
+    wx.navigateTo({
+      url: `/pages/contribute/contribute?type=review&companyId=${companyId}`
+    });
   },
 
   // 展开/收起点评
-  toggleReviewExpand(e) {
-    const index = e.currentTarget.dataset.index;
+  toggleReviewExpand(event) {
+    const { index } = event.currentTarget.dataset;
     const key = `review.list[${index}].expanded`;
     const current = this.data.review.list[index].expanded;
     this.setData({
@@ -111,13 +118,17 @@ Page(withPrivacy({
    */
   _buildSalary(company) {
     const list = (company && company.salaries) || [];
-    if (!list.length) return { total: 0 };
+    if (!list.length) {
+      return { total: 0 };
+    }
 
-    const amounts = list.map(s => Number(s.amount) || 0).filter(n => n > 0);
-    const sum = amounts.reduce((a, b) => a + b, 0);
-    const avg = amounts.length ? Math.round(sum / amounts.length) : 0;
-    const min = amounts.length ? Math.min.apply(null, amounts) : 0;
-    const max = amounts.length ? Math.max.apply(null, amounts) : 0;
+    const amounts = list
+      .map(salary => Number(salary.amount) || 0)
+      .filter(amount => amount > 0);
+    const totalAmount = amounts.reduce((sum, amount) => sum + amount, 0);
+    const avg = amounts.length ? Math.round(totalAmount / amounts.length) : 0;
+    const min = amounts.length ? Math.min(...amounts) : 0;
+    const max = amounts.length ? Math.max(...amounts) : 0;
 
     let avgPercent = 50;
     if (min !== max) {
@@ -126,26 +137,33 @@ Page(withPrivacy({
 
     // 按岗位聚合
     const jobMap = {};
-    list.forEach(s => {
-      const t = s.title || '其他岗位';
-      if (!jobMap[t]) jobMap[t] = { title: t, count: 0, sum: 0 };
-      jobMap[t].count += 1;
-      jobMap[t].sum += Number(s.amount) || 0;
+    list.forEach(salary => {
+      const title = salary.title || '其他岗位';
+      if (!jobMap[title]) {
+        jobMap[title] = { title, count: 0, sum: 0 };
+      }
+      jobMap[title].count += 1;
+      jobMap[title].sum += Number(salary.amount) || 0;
     });
-    const byJob = Object.keys(jobMap).map(k => ({
-      title: jobMap[k].title,
-      count: jobMap[k].count,
-      avg: jobMap[k].count ? Math.round(jobMap[k].sum / jobMap[k].count) : 0
+    const byJob = Object.keys(jobMap).map(title => ({
+      title: jobMap[title].title,
+      count: jobMap[title].count,
+      avg: jobMap[title].count
+        ? Math.round(jobMap[title].sum / jobMap[title].count)
+        : 0
     })).sort((a, b) => b.count - a.count);
 
     // 按时间倒序，最多展示 5 条
-    const sortedList = list.slice().sort((a, b) => {
-      return (b.date || '').localeCompare(a.date || '');
-    }).slice(0, 5);
+    const sortedList = list.slice()
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+      .slice(0, 5);
 
     return {
       total: list.length,
-      avg, min, max, avgPercent,
+      avg,
+      min,
+      max,
+      avgPercent,
       byJob,
       list: sortedList
     };
@@ -158,53 +176,66 @@ Page(withPrivacy({
    */
   _buildReview(company) {
     const list = (company && company.reviews) || [];
-    if (!list.length) return { total: 0 };
+    if (!list.length) {
+      return { total: 0 };
+    }
 
-    const scores = list.map(r => Number(r.score) || 0);
-    const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-    const recommendCount = list.filter(r => r.recommend).length;
+    const scores = list.map(review => Number(review.score) || 0);
+    const averageScore = scores.length
+      ? scores.reduce((sum, score) => sum + score, 0) / scores.length
+      : 0;
+    const recommendCount = list.filter(review => review.recommend).length;
     const recommendRate = list.length ? Math.round(recommendCount / list.length * 100) : 0;
 
     // 维度聚合（5 分制）
-    const dimKeys = [
+    const dimensionDefinitions = [
       { key: 'salary', label: '薪酬福利' },
       { key: 'growth', label: '成长空间' },
       { key: 'culture', label: '企业文化' },
       { key: 'workLife', label: '工作强度' }
     ];
-    const dimensions = dimKeys.map(d => {
-      const arr = list.map(r => r.dimensions && Number(r.dimensions[d.key])).filter(n => n > 0);
-      const s = arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+    const dimensions = dimensionDefinitions.map(dimension => {
+      const scoresByDimension = list
+        .map(review => review.dimensions && Number(review.dimensions[dimension.key]))
+        .filter(score => score > 0);
+      const score = scoresByDimension.length
+        ? scoresByDimension.reduce((sum, value) => sum + value, 0) / scoresByDimension.length
+        : 0;
       return {
-        label: d.label,
-        score: s.toFixed(1),
-        percent: Math.round(s / 5 * 100)
+        label: dimension.label,
+        score: score.toFixed(1),
+        percent: Math.round(score / 5 * 100)
       };
     });
 
-    const sortedList = list.slice().sort((a, b) => {
-      return (b.date || '').localeCompare(a.date || '');
-    }).slice(0, 10).map((r, index) => {
-      if (!r.avatar) {
-        // 使用简单的长度/字符计算分配 1-5 对应的本地随机头像
-        const str = r.author || (r.id ? String(r.id) : String(index));
-        let num = 0;
-        for (let i = 0; i < str.length; i++) {
-          num += str.charCodeAt(i);
+    const sortedList = list.slice()
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+      .slice(0, 10)
+      .map((review, index) => {
+        if (review.avatar) {
+          return { ...review };
         }
-        const avatarId = (num % 5) + 1;
-        r.avatar = `/imgs/avatar/${avatarId}.png`;
-      }
-      return r;
-    });
+
+        // 根据稳定的作者/id 字符串分配 1-5 号本地头像。
+        const seed = review.author || (review.id ? String(review.id) : String(index));
+        let hash = 0;
+        for (let i = 0; i < seed.length; i += 1) {
+          hash += seed.charCodeAt(i);
+        }
+        const avatarId = (hash % 5) + 1;
+        return {
+          ...review,
+          avatar: `/imgs/avatar/${avatarId}.png`
+        };
+      });
 
     return {
       total: list.length,
-      avg: avg.toFixed(1),
-      avgInt: Math.round(avg),
+      avg: averageScore.toFixed(1),
+      avgInt: Math.round(averageScore),
       recommendRate,
       dimensions,
       list: sortedList
     };
   }
-}))
+}));

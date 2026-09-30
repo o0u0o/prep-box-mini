@@ -32,7 +32,6 @@
 const LOGO = 'https://img.icons8.com/color/240/company.png';
 const TIME = '2026-05-10';
 
-
 const realRecords = [
   // ===== 贵州（既有 2 条，保留） =====
   {
