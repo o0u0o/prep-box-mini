@@ -54,6 +54,16 @@
     gap: 12rpx;
     margin-top: var(--space-md);
 }
+.d-legal-tip {
+    margin-top: var(--space-md);
+    padding: 16rpx 20rpx;
+    background-color: #FFF8EC;
+    border: 1rpx solid #FFE1A8;
+    border-radius: 12rpx;
+    font-size: 24rpx;
+    line-height: 1.7;
+    color: #8A5A00;
+}
 
 /* ===== Panel 通用 ===== */
 .d-panel {
@@ -120,6 +130,15 @@
     padding-left: 16rpx;
     border-left: 6rpx solid var(--color-primary);
 }
+.section-tip {
+    margin-bottom: var(--space-sm);
+    padding: 12rpx 16rpx;
+    background-color: var(--color-bg-soft);
+    border-radius: 10rpx;
+    font-size: 23rpx;
+    line-height: 1.7;
+    color: var(--color-text-3);
+}
 
 .d-empty {
     text-align: center;
@@ -141,11 +160,116 @@
     color: var(--color-primary);
     margin-bottom: var(--space-sm);
 }
-
+/* ===== Skeleton ===== */
+.skeleton-container {
+    padding: var(--space-lg) var(--space-md);
+    background-color: #FFFFFF;
+}
+.skeleton-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: var(--space-xl);
+}
+.skeleton-logo {
+    width: 96rpx;
+    height: 96rpx;
+    border-radius: 16rpx;
+    background-color: #F0F2F5;
+    flex-shrink: 0;
+}
+.skeleton-title {
+    flex: 1;
+    margin-left: var(--space-md);
+}
+.skeleton-line {
+    height: 32rpx;
+    background-color: #F0F2F5;
+    border-radius: 8rpx;
+    margin-bottom: 16rpx;
+}
+.skeleton-tabs {
+    display: flex;
+    margin-bottom: var(--space-lg);
+    gap: 40rpx;
+}
+.skeleton-tab {
+    width: 100rpx;
+    height: 32rpx;
+    background-color: #F0F2F5;
+    border-radius: 8rpx;
+}
+.skeleton-content .skeleton-line {
+    margin-bottom: 24rpx;
+}
 .d-loading {
     text-align: center;
     padding: 200rpx 0;
     color: var(--color-text-3);
+}
+
+/* ===== 隐私授权弹窗 ===== */
+.privacy-mask {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 60rpx;
+}
+.privacy-modal {
+    width: 100%;
+    max-width: 600rpx;
+    background-color: #FFFFFF;
+    border-radius: 24rpx;
+    padding: 48rpx 40rpx 32rpx;
+    box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.18);
+}
+.privacy-title {
+    font-size: 32rpx;
+    font-weight: 700;
+    color: var(--color-text);
+    text-align: center;
+    margin-bottom: var(--space-md);
+}
+.privacy-body {
+    font-size: 26rpx;
+    color: var(--color-text-2);
+    line-height: 1.8;
+    margin-bottom: var(--space-lg);
+}
+.privacy-link {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+.privacy-actions {
+    display: flex;
+    gap: var(--space-md);
+}
+.privacy-btn {
+    flex: 1;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size: 28rpx;
+    border-radius: 999rpx;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+.privacy-btn::after {
+    border: none;
+}
+.privacy-btn-reject {
+    background-color: var(--color-bg);
+    color: var(--color-text-2);
+}
+.privacy-btn-agree {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+}
+.privacy-btn-agree:active {
+    background-color: #0E5C44;
 }
 
 /* ===== 空态扩展 ===== */
@@ -193,17 +317,41 @@
     font-size: 22rpx;
     color: var(--color-text-3);
 }
+.sal-range-low,
+.sal-range-high {
+    width: 96rpx;
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.sal-range-high {
+    text-align: right;
+}
 .sal-range-bar {
     flex: 1;
     height: 8rpx;
     background-color: rgba(184, 110, 0, 0.15);
     border-radius: 8rpx;
-    overflow: hidden;
+    position: relative;
+    border-radius: 8rpx;
 }
 .sal-range-bar-inner {
     height: 100%;
     width: 100%;
+    border-radius: 8rpx;
     background: linear-gradient(90deg, #FFD89B 0%, #B86E00 100%);
+}
+.sal-range-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12rpx;
+    height: 16rpx;
+    background-color: #FFFFFF;
+    border: 2rpx solid #B86E00;
+    border-radius: 6rpx;
+    box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
 }
 
 .sal-job-row {
@@ -424,6 +572,18 @@
     font-size: 26rpx;
     line-height: 1.7;
     color: var(--color-text);
+}
+.rev-item-content-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.rev-item-expand {
+    display: inline-block;
+    color: var(--color-primary);
+    font-size: 26rpx;
+    margin-top: 8rpx;
 }
 .rev-item-tags {
     margin-top: var(--space-sm);

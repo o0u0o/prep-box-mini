@@ -45,7 +45,7 @@
                   bg-color="#FFFFFF"
                   shape="circle"
                   show-cancel="{{false}}"
-                  bind:linconfirm="endsearchList">
+                  bind:linconfirm="onSearchConfirm">
     </l-search-bar>
 
     <!-- 热门分类标签 -->
@@ -53,23 +53,23 @@
       <view class="hero-tag" data-kw="劳动争议" bindtap="onTagTap">劳动争议</view>
       <view class="hero-tag" data-kw="行政处罚" bindtap="onTagTap">行政处罚</view>
       <view class="hero-tag" data-kw="失信被执行" bindtap="onTagTap">失信被执行</view>
-      <view class="hero-tag" data-kw="疑似传销" bindtap="onTagTap">疑似传销</view>
+      <view class="hero-tag" data-kw="招聘风险线索" bindtap="onTagTap">招聘风险线索</view>
     </view>
   </view>
 
   <!-- 合规提示条 -->
   <view class="disclaimer">
-    面试准备盒 · PrepBox：平台内容仅作面试、求职参考，不构成对企业的最终定性。发现失实可 <text class="link" bindtap="goAppeal">申诉、反馈</text>。
+    面试准备盒 · PrepBox：平台内容仅作面试、求职参考，不构成对企业的最终定性；企业状态和争议记录请以官方最新公示为准。发现失实可 <text class="link" bindtap="goAppeal">申诉、反馈</text>。
   </view>
 
   <!-- 分区标题 -->
   <view class="section-header">
-    <view class="section-title">风险线索</view>
+    <view class="section-title">{{isSearch ? '搜索结果' : '热门企业'}}</view>
     <view class="section-extra">仅供参考</view>
   </view>
 
   <!-- 公司卡片列表 -->
-  <block wx:for="{{companyData.companys}}" wx:key="id">
+  <block wx:for="{{companyData}}" wx:key="id">
     <view class="card-wrap" data-id="{{item.id}}" bindtap="goDetail" hover-class="card-hover">
 
       <!-- ① 顶部：Logo + 公司名（省略） + 跳转箭头 -->
@@ -123,6 +123,15 @@
     </view>
   </block>
 
+  <!-- 空态：无搜索结果 -->
+  <view class="empty-state" wx:if="{{companyData.length === 0}}">
+    <view class="empty-state-title">{{isSearch ? '没有找到相关企业' : '暂无企业数据'}}</view>
+    <view class="empty-state-tip" wx:if="{{isSearch}}">换个关键词试试，或者通过下方入口反馈线索</view>
+    <view class="empty-state-actions" wx:if="{{isSearch}}">
+      <view class="empty-state-btn" bindtap="goAppeal">提交线索 / 反馈</view>
+    </view>
+  </view>
+
   <!-- 页脚链接 -->
   <view class="footer-links">
     <text class="link" bindtap="goNotice">投稿须知</text>
@@ -151,4 +160,3 @@
     </view>
   </view>
 </view>
-

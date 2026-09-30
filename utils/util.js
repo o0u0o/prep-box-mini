@@ -1,20 +1,13 @@
-const promisic = function (func) {
-  return function (params = {}) {
-    return new Promise((resolve, reject) => {
-      const args = Object.assign(params, {
-        success: (res) => {
-          resolve(res);
-        },
-        fail: (error) => {
-          reject(error);
-        }
-      });
-      func(args);
+function promisify(api) {
+  return (params = {}) => new Promise((resolve, reject) => {
+    api({
+      ...params,
+      success: resolve,
+      fail: reject
     });
-  };
-};
-
-// 使用-设计代理模式
-export {
-  promisic
+  });
 }
+
+export {
+  promisify
+};

@@ -66,6 +66,10 @@
 .hero-search-icon {
     margin-right: var(--space-sm) !important;
 }
+.hero-search-cancel {
+    color: #FFFFFF !important;
+    font-size: 26rpx !important;
+}
 
 .hero-tags {
     margin-top: 28rpx;
@@ -220,6 +224,37 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+/* ============= 空态 ============= */
+.empty-state {
+    margin: 60rpx var(--space-md);
+    padding: 80rpx var(--space-lg);
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    text-align: center;
+}
+.empty-state-title {
+    font-size: 30rpx;
+    color: var(--color-text);
+    font-weight: 600;
+}
+.empty-state-tip {
+    margin-top: var(--space-sm);
+    font-size: 26rpx;
+    color: var(--color-text-3);
+    line-height: 1.6;
+}
+.empty-state-actions {
+    margin-top: var(--space-lg);
+}
+.empty-state-btn {
+    display: inline-block;
+    padding: 16rpx 40rpx;
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    border-radius: 999rpx;
+    font-size: 26rpx;
 }
 
 /* ============= 页脚链接 ============= */

@@ -1,14 +1,27 @@
 {
   "name": "prepbox",
   "version": "1.1.0",
+  "private": true,
   "description": "面试准备盒 / PrepBox — 面试前，准备一下",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "audit": "npm audit --audit-level=high",
+    "check": "npm run lint && npm run validate",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run check",
+    "validate": "node scripts/validate-project.cjs"
   },
   "author": "岳川贵",
   "license": "ISC",
   "dependencies": {
     "lin-ui": "^0.9.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.11.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   }
 }

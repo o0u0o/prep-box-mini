@@ -1,103 +1,52 @@
-import {Company} from "../../model/company";
+import { Company } from '../../model/company';
+import { withPrivacy } from '../../utils/privacy';
 
-Page({
-
-  /**
-   * 页面的初始数据
-   */
+Page(withPrivacy({
   data: {
     companyData: [],
-    // 隐私授权弹窗
-    showPrivacy: false,
-    privacyContractName: '《隐私政策》'
+    isSearch: false
+    // 隐私授权字段（showPrivacy / privacyContractName）由 withPrivacy 注入
   },
 
-  /**
-   * 加载时
-   */
-  async onLoad(options) {
-    this.initAllData();
+  async onLoad() {
     this.checkPrivacy();
+    await this.loadCompanies();
   },
 
-  /**
-   * 初始化所有数据
-   */
-  async initAllData(){
-    // 默认加载公司列表
-    const companyData = await Company.searchByKeyword('');
-    this.setData({ companyData });
-  },
-
-  /**
-   * 隐私授权检查（基础库 >= 2.32.3 + app.json 中 __usePrivacyCheck__:true 时生效）
-   *  - 首次进入若未同意则弹窗
-   *  - 收到隐私接口需要授权事件时也弹窗（onNeedPrivacyAuthorization）
-   */
-  checkPrivacy() {
-    if (!wx.getPrivacySetting) return; // 老基础库直接放行
-    wx.getPrivacySetting({
-      success: (res) => {
-        if (res.needAuthorization) {
-          this.setData({
-            showPrivacy: true,
-            privacyContractName: res.privacyContractName || '《隐私政策》'
-          });
-        }
-      }
+  async loadCompanies(searchTerm = '') {
+    const keyword = searchTerm.trim();
+    const response = await Company.searchByKeyword(keyword);
+    this.setData({
+      companyData: (response && response.companys) || [],
+      isSearch: Boolean(keyword)
     });
-    if (wx.onNeedPrivacyAuthorization) {
-      wx.onNeedPrivacyAuthorization((resolve) => {
-        this._privacyResolve = resolve;
-        this.setData({ showPrivacy: true });
-      });
-    }
   },
 
-  // 同意（由 <button open-type="agreePrivacyAuthorization"> 触发）
-  onAgreePrivacy() {
-    this.setData({ showPrivacy: false });
-    if (typeof this._privacyResolve === 'function') {
-      this._privacyResolve({ event: 'agree', buttonId: 'agree-btn' });
-      this._privacyResolve = null;
-    }
-  },
-
-  // 拒绝
-  onRejectPrivacy() {
-    this.setData({ showPrivacy: false });
-    if (typeof this._privacyResolve === 'function') {
-      this._privacyResolve({ event: 'disagree' });
-      this._privacyResolve = null;
-    }
-  },
-
-  // 弹窗内查看隐私政策详情
-  goPrivacyDetail() {
-    wx.navigateTo({ url: '/pages/privacy/privacy' });
-  },
-
-  // 搜索
-  async endsearchList(e) {
-    const keyword = e.detail.value;
-    const companyData = await Company.searchByKeyword(keyword);
-    this.setData({ companyData });
+  async onSearchConfirm(event) {
+    await this.loadCompanies(event.detail.value || '');
   },
 
   // 跳转：投稿须知 / 隐私政策 / 申诉反馈
-  goNotice(){ wx.navigateTo({ url: '/pages/notice/notice' }); },
-  goPrivacy(){ wx.navigateTo({ url: '/pages/privacy/privacy' }); },
-  goAppeal(){ wx.navigateTo({ url: '/pages/appeal/appeal' }); },
+  goNotice() {
+    wx.navigateTo({ url: '/pages/notice/notice' });
+  },
+
+  goPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/privacy' });
+  },
+
+  goAppeal() {
+    wx.navigateTo({ url: '/pages/appeal/appeal' });
+  },
 
   // 跳转公司详情
-  goDetail(e){
-    const id = e.currentTarget.dataset.id;
-    wx.navigateTo({ url: '/pages/detail/detail?id=' + id });
+  goDetail(event) {
+    const { id } = event.currentTarget.dataset;
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` });
   },
 
   // 热门标签点击：等价触发一次搜索
-  onTagTap(e){
-    const kw = e.currentTarget.dataset.kw;
-    this.endsearchList({ detail: { value: kw } });
+  async onTagTap(event) {
+    await this.loadCompanies(event.currentTarget.dataset.kw || '');
   }
-})
+}));

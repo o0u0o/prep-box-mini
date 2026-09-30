@@ -4,6 +4,7 @@
     "pages/contribute/contribute",
     "pages/detail/detail",
     "pages/notice/notice",
+    "pages/about/about",
     "pages/privacy/privacy",
     "pages/review-status/review-status",
     "pages/appeal/appeal"

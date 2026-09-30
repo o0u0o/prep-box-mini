@@ -7,7 +7,7 @@ module.exports = [
   { value: '行政处罚', label: '行政处罚' },
   { value: '失信被执行', label: '失信被执行' },
   { value: '培训机构', label: '培训机构' },
-  { value: '疑似传销', label: '疑似传销' },
-  { value: '疑似诈骗', label: '疑似诈骗' },
+  { value: '招聘风险线索', label: '招聘风险线索' },
+  { value: '其他可核验线索', label: '其他可核验线索' },
   { value: '其他', label: '其他' }
 ];

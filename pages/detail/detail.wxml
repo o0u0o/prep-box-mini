@@ -40,6 +40,10 @@
              bg-color="{{tagColor.risk().bg}}"
              font-color="{{tagColor.risk().font}}">{{r.label}}</l-tag>
     </view>
+
+    <view class="d-legal-tip">
+      本页信息基于公开来源或用户提交材料整理，仅供求职前背景参考，不代表平台对企业作出最终定性；企业状态、司法/行政记录请以官方最新公示为准。
+    </view>
   </view>
 
   <!-- ====== Tab 切换 ====== -->
@@ -105,12 +109,13 @@
             <text class="sal-amount-num">{{salary.avg}}</text>
             <text class="sal-amount-unit">元/月</text>
           </view>
-          <view class="sal-overview-sub">平均月薪 · 来自 {{salary.total}} 位用户分享</view>
+          <view class="sal-overview-sub">平均月薪 · 来自 {{salary.total}} 条经审核样本</view>
         </view>
         <view class="sal-range">
           <text class="sal-range-low">{{salary.min}}</text>
           <view class="sal-range-bar">
             <view class="sal-range-bar-inner"></view>
+            <view class="sal-range-indicator" style="left: {{salary.avgPercent}}%"></view>
           </view>
           <text class="sal-range-high">{{salary.max}}</text>
         </view>
@@ -133,7 +138,8 @@
 
       <!-- 最近薪资爆料 -->
       <view class="sub-section">
-        <view class="sub-title">最近薪资爆料</view>
+        <view class="sub-title">最近薪资样本</view>
+        <view class="section-tip">薪资内容来自用户主动提交并经基础审核的样本，仅反映提交时点信息，不构成对实际薪酬的承诺或保证。</view>
         <view class="sal-item" wx:for="{{salary.list}}" wx:for-item="s" wx:key="id">
           <view class="sal-item-head">
             <text class="sal-item-title">{{s.title}}</text>
@@ -152,7 +158,7 @@
     </block>
     <view class="d-empty" wx:else>
       暂无薪资数据
-      <view class="d-empty-tip">成为第一位分享者，帮助更多求职者了解真实薪资</view>
+      <view class="d-empty-tip">可提交可核验、已脱敏的薪资样本，帮助更多求职者参考</view>
     </view>
 
     <view class="sal-cta">
@@ -172,7 +178,7 @@
         <view class="rev-score-side">
           <l-rate score="{{review.avgInt}}" disabled="{{true}}" size="24"
                   active-color="#FFDD55" inActive-color="#FFF5CE" />
-          <view class="rev-score-count">{{review.total}} 人已点评</view>
+          <view class="rev-score-count">{{review.total}} 条经审核点评</view>
         </view>
       </view>
 
@@ -197,6 +203,7 @@
       <!-- 点评列表 -->
       <view class="sub-section">
         <view class="sub-title">最新点评</view>
+        <view class="section-tip">点评内容来自用户主动提交并经基础审核，不代表平台观点；涉及争议事实的，请结合公开裁判文书、行政公示或企业说明自行核验。</view>
         <l-card class="rev-card"
                 wx:for="{{review.list}}" wx:for-item="r" wx:key="id"
                 type="avatar"
@@ -208,7 +215,10 @@
                   active-color="#FFDD55" inActive-color="#FFF5CE" />
           <!-- 主体：内容 + 标签 + 元信息 -->
           <view class="rev-card-body">
-            <view class="rev-item-content">{{r.content}}</view>
+            <view class="rev-item-content {{!r.expanded ? 'rev-item-content-clamp' : ''}}">{{r.content}}</view>
+            <view class="rev-item-expand" wx:if="{{r.content.length > 80}}" data-index="{{index}}" bindtap="toggleReviewExpand">
+              {{r.expanded ? '收起' : '展开'}}
+            </view>
             <view class="rev-item-tags" wx:if="{{r.tags && r.tags.length}}">
               <l-tag wx:for="{{r.tags}}" wx:for-item="t" wx:key="*this"
                      shape="circle" size="mini"
@@ -227,7 +237,7 @@
     </block>
     <view class="d-empty" wx:else>
       暂无点评
-      <view class="d-empty-tip">真实点评由前/在职员工提交，欢迎成为第一位分享者</view>
+      <view class="d-empty-tip">点评需客观、脱敏，并提供可核验依据或亲历说明</view>
     </view>
 
     <view class="sal-cta">
@@ -241,7 +251,7 @@
     <text class="sal-dot">·</text>
     <text>更新于 {{company.update_time || '—'}}</text>
     <text class="sal-dot">·</text>
-    <text>{{company.is_real ? '已核实' : '未核实'}}</text>
+    <text>{{company.is_real ? '来源已记录' : '待补充来源'}}</text>
   </view>
 
   <!-- ====== 底部申诉入口 ====== -->
@@ -251,4 +261,40 @@
   </view>
 </view>
 
-<view class="d-loading" wx:else>加载中...</view>
+<view class="skeleton-container" wx:else>
+  <view class="skeleton-header">
+    <view class="skeleton-logo"></view>
+    <view class="skeleton-title">
+      <view class="skeleton-line" style="width: 60%;"></view>
+      <view class="skeleton-line" style="width: 40%;"></view>
+    </view>
+  </view>
+  <view class="skeleton-tabs">
+    <view class="skeleton-tab"></view>
+    <view class="skeleton-tab"></view>
+    <view class="skeleton-tab"></view>
+  </view>
+  <view class="skeleton-content">
+    <view class="skeleton-line" style="width: 100%;"></view>
+    <view class="skeleton-line" style="width: 100%;"></view>
+    <view class="skeleton-line" style="width: 80%;"></view>
+  </view>
+</view>
+
+<!-- ============= 隐私授权弹窗（基础库 >= 2.32.3） ============= -->
+<view class="privacy-mask" wx:if="{{showPrivacy}}" catchtouchmove="">
+  <view class="privacy-modal">
+    <view class="privacy-title">用户隐私保护提示</view>
+    <view class="privacy-body">
+      在您使用复制等功能前，需要您同意
+      <text class="privacy-link" bindtap="goPrivacyDetail">{{privacyContractName}}</text>
+      。点击"同意"即代表您已阅读并接受全部条款。
+    </view>
+    <view class="privacy-actions">
+      <button class="privacy-btn privacy-btn-reject" bindtap="onRejectPrivacy">拒绝</button>
+      <button class="privacy-btn privacy-btn-agree"
+              open-type="agreePrivacyAuthorization"
+              bindagreeprivacyauthorization="onAgreePrivacy">同意</button>
+    </view>
+  </view>
+</view>
