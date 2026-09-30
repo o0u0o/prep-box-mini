@@ -30,6 +30,7 @@ page {
     --space-sm: 16rpx;
     --space-md: 24rpx;
     --space-lg: 32rpx;
+    --space-xl: 48rpx;
 
     background-color: var(--color-bg);
     color: var(--color-text);

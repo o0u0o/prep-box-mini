@@ -317,6 +317,17 @@
     font-size: 22rpx;
     color: var(--color-text-3);
 }
+.sal-range-low,
+.sal-range-high {
+    width: 96rpx;
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.sal-range-high {
+    text-align: right;
+}
 .sal-range-bar {
     flex: 1;
     height: 8rpx;

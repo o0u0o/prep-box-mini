@@ -48,6 +48,11 @@ page {
 .field:first-child { padding-top: 0; }
 .field:last-child { border-bottom: none; padding-bottom: 0; }
 
+.field-row,
+.field-block {
+    display: block;
+}
+
 .field-label {
     display: block;
     width: 100%;

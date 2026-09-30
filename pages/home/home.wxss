@@ -66,6 +66,10 @@
 .hero-search-icon {
     margin-right: var(--space-sm) !important;
 }
+.hero-search-cancel {
+    color: #FFFFFF !important;
+    font-size: 26rpx !important;
+}
 
 .hero-tags {
     margin-top: 28rpx;
